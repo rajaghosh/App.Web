@@ -1,0 +1,89 @@
+<div
+    style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; padding-left: 10px; width: 100%; padding-top: 20px; padding-bottom: 20px;">
+    <div style="font-size: larger;">
+        R System Hacker Data Information Page
+    </div>
+</div>
+
+<div *ngIf="showloader">
+    <div
+        style="background-color: #333; opacity: 0.5; height: 100%; width: 100%; position: absolute; top:0px; left:0px; z-index: 999">
+    </div>
+    <div style="position: fixed; top:50%; left:50%; z-index: 1000;">
+        <mat-spinner color="accent"></mat-spinner>
+        Loading data...
+    </div>
+</div>
+
+<div style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; padding-left: 10px; width: 100%;">
+    We have total {{checkCount}} records. Click to get the data set
+    <button mat-raised-button color="accent" style="margin: 10px;" *ngFor="let item of indexArr"
+        (click)="fillWithData(item)">{{(item*pageSize)}} - {{(item*pageSize + pageSize)}}</button>
+</div>
+
+<div style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; padding-top:10px; padding-left: 10px; width: 100%;">
+    <div>Enter text to search the result&nbsp;
+        <mat-form-field appearance="fill">
+            <mat-label>
+                Search Table
+            </mat-label>
+            <input *ngIf="!isDataLoaded" matInput placeholder="Enter Search Text" disabled />
+            <input *ngIf="isDataLoaded" matInput placeholder="Enter Search Text" (keyup)="applyFilter($event)"
+                #inputSearch />
+        </mat-form-field>
+        <span *ngIf="!isDataLoaded">&nbsp;*Search active when data is present.&nbsp;</span>
+        <span *ngIf="isDataLoaded">&nbsp;*Search active.&nbsp;</span>
+
+
+        <span *ngIf="rangeOffset == -1">
+            <b>No data is showing. Please click on the range button above.</b>
+        </span>
+        <span *ngIf="rangeOffset >=0">
+            <b>Showing data of range {{rangeOffset*pageSize}} - {{rangeOffset*pageSize + pageSize}} records. 
+                <span style="color:blue">Currenly showing {{currentDataCount}} record(s).</span>
+            </b>
+        </span>
+    </div>
+</div>
+
+<div style=" padding-left: 10px; margin-top:10px; box-shadow:  rgba(0, 0, 0, 0.24) 0px 3px 8px; width: 100%;">
+    <table mat-table matSort [dataSource]="dataSource">
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
+            <td mat-cell *matCellDef="let row">{{row.id}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+            <td mat-cell *matCellDef="let row">{{row.title}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+            <td mat-cell *matCellDef="let row">{{row.type}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="url">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Link</th>
+            <td mat-cell *matCellDef="let row">
+                <div *ngIf="row.url!=null || row.url != undefined && row.url.trim().length > 0">
+                    <button mat-raised-button color="primary" (click)="openUrl(row.url)">Click To Visit</button>
+                </div>
+                <div *ngIf="row.url==null || row.url == undefined">
+                    No Link Available
+                </div>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[10,50,100,200]" aria-levels="Select Page Size"></mat-paginator>
+
+</div>
+
+<div style="height: 20px;">
+
+</div>
