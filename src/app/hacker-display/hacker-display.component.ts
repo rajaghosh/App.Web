@@ -28,13 +28,14 @@ export class HackerDisplayComponent implements AfterViewInit {
   isDataLoaded: boolean = false;
   originalHackerData: HackerData[] = [];
   currentDataCount: number = 0;
+  title = 'R System Hacker Data Information Page';
 
   constructor(private hackerService: HackerService) {
 
     this.showloader = true;
     this.hackerService.getTotalDataSet().subscribe((totalEvent: TotalDataHeader[]) => {
 
-      console.log(JSON.stringify(totalEvent));
+      // console.log(JSON.stringify(totalEvent));
       this.checkCount = totalEvent.length;
       var tempCheck = (this.checkCount % this.pageSize) > 0 ? 1 : 0;
 
@@ -66,7 +67,7 @@ export class HackerDisplayComponent implements AfterViewInit {
     //update data count to show on the html page
     this.currentDataCount = newFilteredData.length;
 
-    console.log(this.dataSource);
+    // console.log(this.dataSource);
 
     if (this.dataSource.paginator) {
       //reset to first page for pagination
@@ -78,7 +79,7 @@ export class HackerDisplayComponent implements AfterViewInit {
     this.showloader = true;
     this.hackerService.getDataByPageSize(offset).subscribe((dataStream) => {
 
-      console.log(dataStream);
+      // console.log(dataStream);
 
       this.posts = dataStream;
       this.dataSource = new MatTableDataSource(this.posts);
