@@ -10,7 +10,7 @@ import { HackerService } from 'src/services/hacker.service';
   templateUrl: './hacker-display.component.html',
   styleUrls: ['./hacker-display.component.css'],
 })
-export class HackerDisplayComponent implements AfterViewInit {
+export class HackerDisplayComponent {
 
   displayedColumns: string[] = ['id', 'title', 'type', 'url'];
   dataSource!: MatTableDataSource<HackerData>;
@@ -29,34 +29,38 @@ export class HackerDisplayComponent implements AfterViewInit {
   originalHackerData: HackerData[] = [];
   currentDataCount: number = 0;
   title = 'R System Hacker Data Information Page';
+  issues: string = "";
 
   constructor(private hackerService: HackerService) {
 
     this.showloader = true;
-    this.hackerService.getTotalDataSet().subscribe((totalEvent: TotalDataHeader[]) => {
+    this.issues = "";
 
-      // console.log(JSON.stringify(totalEvent));
-      this.checkCount = totalEvent.length;
-      var tempCheck = (this.checkCount % this.pageSize) > 0 ? 1 : 0;
+    this.hackerService.getTotalDataSet().subscribe({
+      next: (totalEvent: TotalDataHeader[]) => {
 
-      this.indexHolder = Math.floor(this.checkCount / this.pageSize) + tempCheck;
+        this.checkCount = totalEvent.length;
+        var tempCheck = (this.checkCount % this.pageSize) > 0 ? 1 : 0;
 
-      //Create index list
-      for (let i = 0; i < this.indexHolder; i++) {
-        this.indexArr.push(i);
+        this.indexHolder = Math.floor(this.checkCount / this.pageSize) + tempCheck;
+
+        //Create index list
+        for (let i = 0; i < this.indexHolder; i++) {
+          this.indexArr.push(i);
+        }
+        this.showloader = false;
+        this.issues = "";
+      },
+      error: (err) => {
+        this.showloader = false;
+        this.issues = "Error retrieving data.";
       }
-      this.showloader = false;
+
     });
 
   }
 
-  ngAfterViewInit(): void {
-
-  }
-
   applyFilter(event: Event) {
-
-    // console.log(this.dataSource);
 
     const filterValue = (event.target as HTMLInputElement).value;
 
@@ -67,8 +71,6 @@ export class HackerDisplayComponent implements AfterViewInit {
     //update data count to show on the html page
     this.currentDataCount = newFilteredData.length;
 
-    // console.log(this.dataSource);
-
     if (this.dataSource.paginator) {
       //reset to first page for pagination
       this.dataSource.paginator.firstPage();
@@ -77,25 +79,32 @@ export class HackerDisplayComponent implements AfterViewInit {
 
   fillWithData(offset: number) {
     this.showloader = true;
-    this.hackerService.getDataByPageSize(offset).subscribe((dataStream) => {
+    this.issues = "";
 
-      // console.log(dataStream);
+    this.hackerService.getDataByPageSize(offset).subscribe({
+      next: (dataStream) => {
 
-      this.posts = dataStream;
-      this.dataSource = new MatTableDataSource(this.posts);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.showloader = false;
+        this.posts = dataStream;
+        this.dataSource = new MatTableDataSource(this.posts);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.showloader = false;
+        this.issues = "";
 
-      this.originalHackerData = this.dataSource.data;
+        this.originalHackerData = this.dataSource.data;
 
-      //update data count to show on the html page
-      this.currentDataCount = this.dataSource.data.length;
+        //update data count to show on the html page
+        this.currentDataCount = this.dataSource.data.length;
 
-      if (this.posts.length > 0)
-        this.isDataLoaded = true;
+        if (this.posts.length > 0)
+          this.isDataLoaded = true;
 
-      this.rangeOffset = offset;
+        this.rangeOffset = offset;
+      },
+      error: (err) => {
+        this.showloader = false;
+        this.issues = "Error retrieving data.";
+      }
     });
   }
 

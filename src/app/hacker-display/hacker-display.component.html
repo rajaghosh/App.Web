@@ -16,7 +16,8 @@
 </div>
 
 <div style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; padding-left: 10px; width: 100%;">
-    We have total {{checkCount}} records. Click to get the data set
+    We have total {{checkCount}} records. Click to get the data set.
+            <span *ngIf="issues != ''"><b>{{issues}}</b></span>
     <button mat-raised-button color="accent" style="margin: 10px;" *ngFor="let item of indexArr"
         (click)="fillWithData(item)">{{(item*pageSize)}} - {{(item*pageSize + pageSize)}}</button>
 </div>
